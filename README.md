@@ -2,8 +2,8 @@
 
 A highly-performant and lightweight Google Chrome extension that functions like "BuiltWith" or "Wappalyzer" to identify technologies used on web pages.
 
-> **Branch**: `CHROME-TECH-FINDER`  
-> **Repository**: [ERA-V4_Session1](https://github.com/debasishsarangi88/ERA-V4_Session1)
+> **Branch**: `Session1_CHROME-TECH-FINDER`  
+> **Repository**: [TSAI_ERA_V4](https://github.com/debasishsarangi88/TSAI_ERA_V4)
 
 ## Features
 
