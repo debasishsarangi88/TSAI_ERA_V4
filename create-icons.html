@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Tech Detector Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .icon-preview {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .icon-item {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            margin: 10px;
+        }
+        .download-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 5px;
+        }
+        .download-btn:hover {
+            background: #5a6fd8;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Create Tech Detector Icons</h1>
+        
+        <div class="instructions">
+            <h3>How to Fix Your Extension:</h3>
+            <ol>
+                <li>Click each "Download" button below to download the icon files</li>
+                <li>Replace the placeholder files in your <code>icons/</code> folder with these new PNG files</li>
+                <li>Go to <code>chrome://extensions/</code> in Chrome</li>
+                <li>Find "Tech Detector" and click the refresh button (🔄)</li>
+                <li>The extension should now work properly!</li>
+            </ol>
+        </div>
+
+        <div class="icon-preview" id="iconPreview">
+            <!-- Icons will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        const sizes = [16, 32, 48, 128];
+
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Magnifying glass icon
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = Math.max(1, size / 16);
+            ctx.lineCap = 'round';
+            
+            const centerX = size * 0.4;
+            const centerY = size * 0.4;
+            const radius = size * 0.25;
+            
+            // Draw magnifying glass circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Draw magnifying glass handle
+            const handleStartX = centerX + radius * 0.7;
+            const handleStartY = centerY + radius * 0.7;
+            const handleEndX = centerX + radius * 1.4;
+            const handleEndY = centerY + radius * 1.4;
+            
+            ctx.beginPath();
+            ctx.moveTo(handleStartX, handleStartY);
+            ctx.lineTo(handleEndX, handleEndY);
+            ctx.stroke();
+
+            // Add a small dot in the center
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, size * 0.03, 0, 2 * Math.PI);
+            ctx.fill();
+
+            return canvas;
+        }
+
+        function createIconItem(size) {
+            const canvas = generateIcon(size);
+            
+            const item = document.createElement('div');
+            item.className = 'icon-item';
+            
+            const label = document.createElement('div');
+            label.textContent = `${size}x${size}`;
+            label.style.fontWeight = 'bold';
+            label.style.marginBottom = '10px';
+            
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL();
+            img.alt = `Icon ${size}x${size}`;
+            img.style.border = '1px solid #ccc';
+            img.style.borderRadius = '4px';
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn';
+            downloadBtn.textContent = 'Download';
+            downloadBtn.onclick = () => downloadIcon(canvas, size);
+            
+            item.appendChild(label);
+            item.appendChild(img);
+            item.appendChild(downloadBtn);
+            
+            return item;
+        }
+
+        function downloadIcon(canvas, size) {
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // Generate all icons on page load
+        window.onload = function() {
+            const preview = document.getElementById('iconPreview');
+            sizes.forEach(size => {
+                preview.appendChild(createIconItem(size));
+            });
+        };
+    </script>
+</body>
+</html>
