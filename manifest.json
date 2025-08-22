@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "arXiv Enhancer",
+  "description": "Download and rename arXiv papers with clean, descriptive filenames.",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://arxiv.org/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://arxiv.org/abs/*"],
+      "js": ["content_script.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "options_page": "options.html",
+  "action": {
+    "default_popup": "options.html",
+    "default_title": "arXiv Enhancer Settings"
+  }
+}

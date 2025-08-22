@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>arXiv Enhancer - Settings</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>arXiv Enhancer</h1>
+            <p>Download and rename arXiv papers with clean, descriptive filenames</p>
+        </header>
+
+        <main>
+            <section class="settings-section">
+                <h2>Filename Template</h2>
+                <p class="description">
+                    Customize how your downloaded papers are named. Use the placeholders below to create your preferred format.
+                </p>
+
+                <div class="template-input-group">
+                    <label for="filenameTemplate">Template:</label>
+                    <input 
+                        type="text" 
+                        id="filenameTemplate" 
+                        placeholder="e.g., {YYYY} - {FirstAuthor} - {Title}"
+                        maxlength="200"
+                    >
+                </div>
+
+                <div class="placeholders">
+                    <h3>Available Placeholders:</h3>
+                    <div class="placeholder-grid">
+                        <div class="placeholder-item">
+                            <code>{YYYY}</code>
+                            <span>Year of submission</span>
+                        </div>
+                        <div class="placeholder-item">
+                            <code>{FirstAuthor}</code>
+                            <span>First author's last name</span>
+                        </div>
+                        <div class="placeholder-item">
+                            <code>{Title}</code>
+                            <span>Paper title (sanitized)</span>
+                        </div>
+                        <div class="placeholder-item">
+                            <code>{ID}</code>
+                            <span>arXiv paper ID</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>Preview:</h3>
+                    <div id="filenamePreview" class="preview-box">
+                        <em>Enter a template to see a preview</em>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="saveButton" class="btn btn-primary">Save Settings</button>
+                    <button id="resetButton" class="btn btn-secondary">Reset to Default</button>
+                </div>
+            </section>
+
+            <section class="info-section">
+                <h2>How to Use</h2>
+                <ol>
+                    <li>Navigate to any arXiv abstract page (e.g., <code>arxiv.org/abs/1706.03762</code>)</li>
+                    <li>Look for the "Download & Rename" button next to the PDF link</li>
+                    <li>Click the button to download the paper with your custom filename</li>
+                </ol>
+
+                <h2>Example</h2>
+                <p>For the paper "Attention Is All You Need" by Ashish Vaswani et al. (2017):</p>
+                <ul>
+                    <li><strong>Default template:</strong> <code>{YYYY} - {FirstAuthor} - {Title}</code></li>
+                    <li><strong>Result:</strong> <code>2017 - Vaswani - Attention Is All You Need.pdf</code></li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>arXiv Enhancer v1.0 - Made with ❤️ for researchers</p>
+        </footer>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

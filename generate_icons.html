@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Generator - arXiv Enhancer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c5aa0;
+            text-align: center;
+        }
+        .icon-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .icon-preview svg {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px;
+        }
+        .download-section {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .download-section h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .download-btn {
+            padding: 10px 20px;
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+        .download-btn:hover {
+            background-color: #1e3f7a;
+        }
+        .instructions {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            color: #1565c0;
+            margin-top: 0;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>arXiv Enhancer - Icon Generator</h1>
+        
+        <div class="icon-preview">
+            <h2>Icon Preview</h2>
+            <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#2c5aa0;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#1e3f7a;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Background circle -->
+                <circle cx="64" cy="64" r="60" fill="url(#grad1)" stroke="#1e3f7a" stroke-width="2"/>
+                
+                <!-- Document icon -->
+                <rect x="32" y="24" width="48" height="64" rx="4" fill="white" opacity="0.9"/>
+                <rect x="36" y="28" width="40" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="34" width="32" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="40" width="36" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="46" width="28" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="52" width="34" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="58" width="30" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="64" width="35" height="2" fill="#2c5aa0"/>
+                <rect x="36" y="70" width="25" height="2" fill="#2c5aa0"/>
+                
+                <!-- Download arrow -->
+                <path d="M64 80 L64 100 M56 92 L64 100 L72 92" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <!-- ArXiv symbol -->
+                <text x="64" y="110" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">arXiv</text>
+            </svg>
+        </div>
+
+        <div class="instructions">
+            <h3>How to Generate PNG Icons</h3>
+            <ol>
+                <li>Right-click on the icon above and select "Save image as..."</li>
+                <li>Save it as "icon.svg" in your project's icons folder</li>
+                <li>Use an online SVG to PNG converter or image editing software</li>
+                <li>Generate the following sizes: 16x16, 48x48, and 128x128 pixels</li>
+                <li>Save them as icon16.png, icon48.png, and icon128.png respectively</li>
+            </ol>
+        </div>
+
+        <div class="download-section">
+            <h3>Alternative: Use Online Converters</h3>
+            <p>You can also use these online tools to convert the SVG to PNG:</p>
+            <div class="download-buttons">
+                <a href="https://convertio.co/svg-png/" target="_blank" class="download-btn">Convertio</a>
+                <a href="https://cloudconvert.com/svg-to-png" target="_blank" class="download-btn">CloudConvert</a>
+                <a href="https://www.svgviewer.dev/" target="_blank" class="download-btn">SVG Viewer</a>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h3>Manual Icon Creation</h3>
+            <p>If you prefer to create your own icons, you can use any image editing software to create simple icons with the following specifications:</p>
+            <ul>
+                <li><strong>icon16.png:</strong> 16x16 pixels</li>
+                <li><strong>icon48.png:</strong> 48x48 pixels</li>
+                <li><strong>icon128.png:</strong> 128x128 pixels</li>
+            </ul>
+            <p>Recommended colors: #2c5aa0 (primary blue) and #1e3f7a (darker blue)</p>
+        </div>
+    </div>
+
+    <script>
+        // Add click handler to download SVG
+        document.querySelector('.icon-preview svg').addEventListener('click', function() {
+            const svg = this.outerHTML;
+            const blob = new Blob([svg], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'icon.svg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
