@@ -24,12 +24,31 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = 'temp_audio'  # Folder to store temporary audio files
 
-# Create temporary folder if it doesn't exist
+# EC2 and production settings
+app.config['DEBUG'] = False  # Set to False for production
+app.config['HOST'] = '0.0.0.0'  # Listen on all interfaces
+app.config['PORT'] = 5000  # Use port 5000
+
+# Create necessary directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs('logs', exist_ok=True)
+
+# Configure logging for EC2
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('logs/app.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+logger.info("YouTube Audio Waveform Visualizer starting up...")
 
 def download_youtube_audio(url, output_path):
     """
-    Download audio from YouTube URL using yt-dlp
+    Download audio from YouTube URL using yt-dlp with anti-bot measures
     
     Args:
         url (str): YouTube video URL
@@ -39,15 +58,34 @@ def download_youtube_audio(url, output_path):
         bool: True if successful, False otherwise
     """
     try:
-        # Configure yt-dlp options
+        print(f"Starting download for URL: {url}")
+        
+        # Configure yt-dlp options with anti-bot measures
         ydl_opts = {
-            'format': 'bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio',  # Get best audio without conversion
-            'outtmpl': output_path,      # Output template
-            'quiet': False,  # Show progress for debugging
+            'format': 'bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio',
+            'outtmpl': output_path,
+            'quiet': False,
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-us,en;q=0.5',
+                'Accept-Encoding': 'gzip,deflate',
+                'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                'Connection': 'keep-alive',
+            },
+            'extractor_retries': 5,
+            'retries': 5,
+            'fragment_retries': 5,
+            'no_check_certificate': True,
+            'ignoreerrors': False,
+            'nocheckcertificate': True,
         }
         
-        # Download the audio
+        print(f"yt-dlp options configured with anti-bot measures")
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            print("yt-dlp instance created, starting download...")
             ydl.download([url])
         
         # Check if any file was actually downloaded
@@ -70,6 +108,9 @@ def download_youtube_audio(url, output_path):
         
     except Exception as e:
         print(f"Error downloading audio: {e}")
+        print(f"Exception type: {type(e).__name__}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
         return False
 
 def create_waveform_plot(audio_path, output_path):
@@ -157,6 +198,8 @@ def analyze_audio():
         if not youtube_url:
             return jsonify({'error': 'Please provide a YouTube URL'}), 400
         
+        print(f"Processing YouTube URL: {youtube_url}")
+        
         # Generate unique filenames for this request
         unique_id = str(uuid.uuid4())[:8]
         audio_filename = f"audio_{unique_id}"  # No extension, yt-dlp will add it
@@ -165,10 +208,13 @@ def analyze_audio():
         audio_path = os.path.join(app.config['UPLOAD_FOLDER'], audio_filename)
         waveform_path = os.path.join(app.config['UPLOAD_FOLDER'], waveform_filename)
         
+        print(f"Generated filenames - Audio: {audio_filename}, Waveform: {waveform_filename}")
+        
         # Step 1: Download audio from YouTube
-        print(f"Downloading audio from: {youtube_url}")
+        print(f"Starting audio download from: {youtube_url}")
         if not download_youtube_audio(youtube_url, audio_path):
-            return jsonify({'error': 'Failed to download audio from YouTube'}), 500
+            print("Audio download failed")
+            return jsonify({'error': 'Failed to download audio from YouTube. Please try again or check the URL.'}), 500
         
         # Find the actual downloaded file (yt-dlp may or may not add extension)
         actual_audio_path = None
@@ -184,6 +230,7 @@ def analyze_audio():
         # If no file with extension found, check for files without extension
         if not actual_audio_path:
             temp_files = os.listdir(app.config['UPLOAD_FOLDER'])
+            print(f"Searching for files without extension. Available files: {temp_files}")
             # Look for files that start with our audio filename
             for file in temp_files:
                 if file.startswith(os.path.basename(audio_path)) and not file.endswith('.png'):
@@ -198,15 +245,19 @@ def analyze_audio():
             return jsonify({'error': 'Downloaded audio file not found. Please try again.'}), 500
         
         # Step 2: Create waveform visualization
-        print("Creating waveform visualization...")
+        print(f"Creating waveform visualization from: {actual_audio_path}")
         audio_info = create_waveform_plot(actual_audio_path, waveform_path)
         
         if not audio_info:
+            print("Waveform creation failed")
             return jsonify({'error': 'Failed to create waveform visualization'}), 500
+        
+        print(f"Waveform created successfully: {waveform_path}")
         
         # Step 3: Clean up audio file (keep waveform for display)
         if os.path.exists(actual_audio_path):
             os.remove(actual_audio_path)
+            print(f"Cleaned up audio file: {actual_audio_path}")
         
         # Return success response with waveform image and audio info
         return jsonify({
@@ -218,6 +269,8 @@ def analyze_audio():
         
     except Exception as e:
         print(f"Error in analyze_audio: {e}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 @app.route('/waveform/<filename>')
@@ -239,9 +292,16 @@ if __name__ == '__main__':
     print("🎵 YouTube Audio Waveform Visualizer")
     print("=" * 40)
     print("Starting Flask server...")
-    print("Open your browser and go to: http://localhost:8000")
+    print(f"Host: {app.config['HOST']}")
+    print(f"Port: {app.config['PORT']}")
+    print(f"Debug: {app.config['DEBUG']}")
+    print("Open your browser and go to: http://localhost:5000")
     print("Press Ctrl+C to stop the server")
     print("=" * 40)
     
-    # Start the development server
-    app.run(debug=True, host='0.0.0.0', port=8000)
+    # Start the server with configuration
+    app.run(
+        debug=app.config['DEBUG'],
+        host=app.config['HOST'],
+        port=app.config['PORT']
+    )
