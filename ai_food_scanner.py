@@ -485,8 +485,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666;'>
-        <p>🍽️ AI Food Ingredient Scanner Pro | Built with Streamlit & Advanced AI</p>
-        <p>Powered by computer vision and machine learning for accurate food analysis</p>
+        <p>Made with ❤️ for the TSAI ERA Community</p>
     </div>
     """, unsafe_allow_html=True)
 
