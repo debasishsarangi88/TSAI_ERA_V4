@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Direct Flask Deployment Script (No Docker)
-# This script sets up the Flask app directly on EC2
+# Simple Flask Deployment Script (Minimal Dependencies)
+# This script sets up the Flask app with minimal system dependencies
 
 set -e
 
-echo "🚀 Direct Flask Deployment Script for AI Food Scanner Pro"
+echo "🚀 Simple Flask Deployment Script for AI Food Scanner Pro"
 echo "========================================================"
 
 # Colors for output
@@ -24,12 +24,9 @@ print_warning() {
 # Update system
 print_status "Updating system packages..."
 sudo apt-get update
-sudo apt-get upgrade -y
 
-# Install Python and dependencies
-print_status "Installing Python and system dependencies..."
-
-# Install basic packages first
+# Install minimal Python dependencies
+print_status "Installing Python and basic dependencies..."
 sudo apt-get install -y \
     python3 \
     python3-pip \
@@ -37,18 +34,7 @@ sudo apt-get install -y \
     python3-dev \
     build-essential \
     curl \
-    nginx \
-    supervisor
-
-# Install OpenCV dependencies (handle different Ubuntu versions)
-print_status "Installing OpenCV dependencies..."
-sudo apt-get install -y \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libgomp1 \
-    libgl1-mesa-glx || sudo apt-get install -y libgl1-mesa-glx-t64 || sudo apt-get install -y libgl1
+    nginx
 
 # Create application directory
 APP_DIR="/opt/ai-food-scanner"
@@ -69,7 +55,22 @@ source venv/bin/activate
 # Install Python dependencies
 print_status "Installing Python dependencies..."
 pip install --upgrade pip
-pip install -r requirements.txt
+
+# Install packages one by one to handle any issues
+pip install flask==3.0.0
+pip install flask-cors==4.0.0
+pip install "numpy>=1.19.3,<2.0.0"
+pip install pillow==10.2.0
+pip install requests==2.31.0
+pip install pandas==2.3.2
+pip install matplotlib==3.10.6
+pip install tqdm==4.67.1
+pip install python-dotenv==1.0.1
+pip install gunicorn==21.2.0
+
+# Try to install opencv-python-headless (no system dependencies)
+print_status "Installing OpenCV (headless version)..."
+pip install opencv-python-headless==4.9.0.80 || pip install opencv-python-headless
 
 # Create uploads and logs directories
 mkdir -p uploads logs
