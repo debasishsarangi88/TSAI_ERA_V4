@@ -1,6 +1,6 @@
 # 🍽️ AI Food Ingredient Scanner Pro
 
-A sophisticated AI-powered web application that analyzes food images to identify ingredients, provide nutritional information, and offer health recommendations.
+A sophisticated AI-powered Flask API with Docker support that analyzes food images to identify ingredients, provide nutritional information, and offer health recommendations.
 
 ## ✨ Features
 
@@ -33,30 +33,43 @@ A sophisticated AI-powered web application that analyzes food images to identify
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/debasishsarangi88/TSAI_ERA_V4.git
    cd TSAI_ERA_V4/Session3
    ```
 
-2. **Install dependencies**
+2. **Choose deployment method:**
+
+   **Option A: Docker Deployment (Recommended)**
    ```bash
-   # Using uv (recommended)
-   uv sync
+   # Make deployment script executable
+   chmod +x deploy_docker.sh
    
-   # Or using pip
+   # Run deployment script
+   ./deploy_docker.sh
+   ```
+
+   **Option B: Direct Flask Deployment**
+   ```bash
+   # Make deployment script executable
+   chmod +x deploy_flask_direct.sh
+   
+   # Run deployment script
+   ./deploy_flask_direct.sh
+   ```
+
+   **Option C: Manual Setup**
+   ```bash
+   # Install dependencies
    pip install -r requirements.txt
-   ```
-
-3. **Run the application**
-   ```bash
-   # Basic version
-   streamlit run app.py
    
-   # Pro version with enhanced features
-   streamlit run ai_food_scanner.py
+   # Run Flask app
+   python flask_app.py
    ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:8501`
+3. **Access the application**
+   - **Docker**: `http://your-server-ip:5000`
+   - **Direct Flask**: `http://your-server-ip:5000`
+   - **With Nginx**: `http://your-server-ip` (port 80)
 
 ## 🔧 Configuration
 

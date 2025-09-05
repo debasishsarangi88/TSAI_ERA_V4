@@ -1,4 +1,5 @@
-streamlit==1.32.0
+flask==3.0.0
+flask-cors==4.0.0
 opencv-python==4.9.0.80
 pillow==10.2.0
 requests==2.31.0
@@ -7,3 +8,4 @@ pandas==2.3.2
 matplotlib==3.10.6
 tqdm==4.67.1
 python-dotenv==1.0.1
+gunicorn==21.2.0
