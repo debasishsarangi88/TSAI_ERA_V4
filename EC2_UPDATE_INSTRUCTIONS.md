@@ -1,26 +1,26 @@
-# 🚀 EC2 Update Instructions
+# 🚀 EC2 Update Instructions - Dessert Detection Fix
 
 ## 📋 **What's New in This Update**
 
-### ✅ **Major Improvements**
-- **Real Computer Vision**: YOLOv8 + deterministic analysis
-- **No More Randomness**: 100% consistent results
-- **Updated Interface**: Accurate AI model information
-- **Cleaned Codebase**: Removed outdated files
-- **Better Accuracy**: 80-95% accuracy on food detection
+### ✅ **Major Fixes**
+- **Fixed Pizza Default Bug**: No more everything detected as pizza
+- **Added Dessert Detection**: Proper detection for desserts like Rasgulla
+- **Enhanced Color Analysis**: Added white/cream and pink color detection
+- **Improved Fallback Logic**: Intelligent fallback instead of defaulting to pizza
+- **Better Accuracy**: More accurate food classification
 
-### 🗑️ **Files Removed (Cleaned Up)**
-- Old Flask app versions (`flask_app.py`, `flask_app_cv.py`)
-- Outdated EC2 update guides
-- Old Streamlit files (`ai_food_scanner.py`, `app.py`)
-- Unnecessary scripts and demo files
+### 🍰 **New Food Categories Added**
+- **Dessert**: For white/cream colored sweets (Rasgulla, Gulab Jamun, etc.)
+- **Sweet**: For pink/white colored sweet foods
+- Proper ingredients and nutrition info for desserts
 
-### 📁 **Current Clean Structure**
-- `flask_app_fixed.py` - Main app with real CV
-- `templates/index.html` - Updated web interface
-- `requirements.txt` - Updated dependencies
-- `README.md` - Comprehensive documentation
-- Test scripts and documentation
+### ️ **Issues Fixed**
+- ❌ **Before**: Every food detected as "Pizza" 
+- ✅ **After**: Proper detection based on actual visual features
+- ❌ **Before**: No dessert detection
+- ✅ **After**: Dedicated dessert and sweet food categories
+- ❌ **Before**: Poor fallback logic
+- ✅ **After**: Intelligent fallback based on color and texture
 
 ---
 
@@ -36,10 +36,10 @@ ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
 # Navigate to project directory
 cd ~/TSAI_ERA_V4
 
-# Download and run the update script
-curl -O https://raw.githubusercontent.com/debasishsarangi88/TSAI_ERA_V4/Session3_AI_Food_Ingredient_Scanner_Pro/update_ec2_latest.sh
-chmod +x update_ec2_latest.sh
-./update_ec2_latest.sh
+# Download and run the dessert fix update script
+curl -O https://raw.githubusercontent.com/debasishsarangi88/TSAI_ERA_V4/Session3_AI_Food_Ingredient_Scanner_Pro/update_ec2_dessert_fix.sh
+chmod +x update_ec2_dessert_fix.sh
+./update_ec2_dessert_fix.sh
 ```
 
 ### **Step 3: Verify Update**
@@ -118,38 +118,54 @@ curl http://localhost:5001/api/health
 ```json
 {
   "status": "healthy",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "yolo_available": true,
   "cv_features": {
     "yolo_detection": true,
     "deterministic_analysis": true,
-    "no_randomness": true
+    "no_randomness": true,
+    "dessert_detection": true,
+    "enhanced_fallback": true
   }
 }
 ```
 
-### **2. Test Food Detection**
+### **2. Test Dessert Detection**
 1. Open browser: `http://YOUR_EC2_PUBLIC_IP:5001`
-2. Upload a food image
+2. Upload a dessert image (Rasgulla, Gulab Jamun, etc.)
 3. Verify you see:
-   - "YOLOv8 + Deterministic CV" as AI model
-   - Real confidence scores
-   - Detection method (YOLO or CV Analysis)
-   - Consistent results (same image = same result)
+   - "Dessert" or "Sweet" as the detected food
+   - Appropriate dessert ingredients (sugar, milk, cream, cardamom, rose water)
+   - NOT "Pizza" anymore!
 
-### **3. Check Logs**
+### **3. Test Other Foods**
+- **Pizza**: Should still detect as Pizza (red + yellow colors)
+- **Salad**: Should detect as Salad (green dominant)
+- **Pasta**: Should detect as Pasta (yellow colors)
+- **Desserts**: Should detect as Dessert/Sweet (white/cream colors)
+
+### **4. Check Logs**
 ```bash
 tail -f flask_app.log
 ```
 
 **Look for:**
-- "YOLOv8 model loaded successfully"
-- "YOLO detected X objects" (for real images)
-- Processing times around 45ms
+- "Classified as DESSERT based on white color, high brightness, and smooth texture"
+- "Fallback: Classified as DESSERT based on white dominance"
+- No more "Ultimate fallback: return 'pizza'"
 
 ---
 
 ## 🐛 **Troubleshooting**
+
+### **Issue: Still Detecting Everything as Pizza**
+```bash
+# Check if the update was applied
+grep -n "dessert" flask_app_fixed.py
+
+# Should show dessert entries in FOOD_DATABASE
+# If not, the update didn't apply properly
+```
 
 ### **Issue: App Won't Start**
 ```bash
@@ -170,60 +186,42 @@ source venv/bin/activate
 pip install -r requirements.txt --force-reinstall
 ```
 
-### **Issue: YOLO Model Not Loading**
-```bash
-# Check if model file exists
-ls -la yolov8n.pt
-
-# If missing, it will download automatically on first run
-```
-
-### **Issue: Permission Denied**
-```bash
-# Fix file permissions
-chmod +x flask_app_fixed.py
-chmod +x update_ec2_latest.sh
-```
-
 ---
 
 ## 📊 **What to Expect After Update**
 
-### **✅ Improved Features**
-- **Consistent Results**: Same image always gives same prediction
-- **Real AI**: YOLOv8 actually detects food objects
-- **Better Accuracy**: 80-95% accuracy on common foods
-- **Faster Processing**: ~45ms per image
-- **Accurate Info**: UI shows real AI model details
+### **✅ Fixed Issues**
+- **No More Pizza Default**: Desserts won't be detected as pizza
+- **Proper Dessert Detection**: White/cream foods detected as desserts
+- **Better Accuracy**: More accurate food classification
+- **Intelligent Fallback**: Smart fallback logic instead of pizza default
 
-### **🎯 Supported Foods**
-- Pizza, Salad, Pasta, Sandwich, Hot Dog
-- Apple, Orange, Banana, Cake
-- All with real ingredient detection
+### **🎯 Supported Foods Now Include**
+- **Desserts**: Rasgulla, Gulab Jamun, Kheer, etc.
+- **Sweets**: Pink/white colored sweet foods
+- **All Previous Foods**: Pizza, Salad, Pasta, Burger, etc.
 
 ### **📱 Updated Interface**
-- Shows "YOLOv8 + Deterministic CV" as AI model
-- Displays real confidence scores
-- Shows detection method for each food
-- Indicates YOLO status (Active/Warning)
+- Shows "YOLOv8 + Enhanced CV Pipeline v2.0" as AI model
+- Version 3.2.0 with dessert detection
+- Proper food categories and ingredients
 
 ---
 
 ## 🎉 **Success Indicators**
 
 ### **✅ Update Successful If:**
-1. Health check returns version "3.1.0"
-2. YOLO is available and working
-3. Food detection is consistent (no randomness)
-4. UI shows updated AI model information
-5. Processing times are around 45ms
+1. Health check returns version "3.2.0"
+2. Dessert images are detected as "Dessert" or "Sweet"
+3. No more everything detected as "Pizza"
+4. Logs show dessert detection logic
+5. Enhanced fallback logic is working
 
 ### **🚨 Update Failed If:**
-1. App won't start or crashes
-2. Health check fails
-3. Still seeing random predictions
-4. Old model names in UI
-5. Processing times > 2 seconds
+1. Still detecting desserts as pizza
+2. Health check shows old version
+3. No dessert entries in logs
+4. Fallback still defaults to pizza
 
 ---
 
@@ -231,8 +229,8 @@ chmod +x update_ec2_latest.sh
 
 ### **Check These Files:**
 - `flask_app.log` - Application logs
+- `flask_app_fixed.py` - Main application (should have dessert entries)
 - `requirements.txt` - Dependencies
-- `flask_app_fixed.py` - Main application
 
 ### **Common Commands:**
 ```bash
@@ -251,4 +249,4 @@ ps aux | grep flask
 
 ---
 
-**🎯 Your EC2 instance will now have the latest real computer vision implementation with YOLOv8 and deterministic analysis!**
+**🎯 Your EC2 instance will now properly detect desserts instead of defaulting everything to pizza!**
