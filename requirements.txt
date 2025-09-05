@@ -9,3 +9,7 @@ matplotlib==3.10.6
 tqdm==4.67.1
 python-dotenv==1.0.1
 gunicorn==21.2.0
+ultralytics==8.0.196
+torch==2.0.1
+torchvision==0.15.2
+tensorflow==2.13.0
