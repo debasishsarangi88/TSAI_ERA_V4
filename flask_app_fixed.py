@@ -141,12 +141,12 @@ def analyze_image_colors(image):
     # Convert to HSV for better color analysis
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     
-    # Define color ranges for different foods - ENHANCED WITH WHITE/CREAM
+    # Define color ranges for different foods - FIXED OVERLAPPING RANGES
     color_ranges = {
         'red': [(0, 30, 30), (10, 255, 255)],      # Pizza sauce, tomatoes
         'green': [(35, 30, 30), (85, 255, 255)],   # Vegetables, salad
-        'yellow': [(15, 30, 30), (35, 255, 255)],  # Pasta, bread, bananas
-        'orange': [(10, 30, 30), (25, 255, 255)],  # Oranges, carrots
+        'yellow': [(20, 30, 30), (35, 255, 255)],  # Bananas (pure yellow, no orange overlap)
+        'orange': [(10, 30, 30), (20, 255, 255)],  # Oranges (pure orange, no yellow overlap)
         'white': [(0, 0, 200), (180, 30, 255)],    # Desserts, cream, milk
         'pink': [(160, 30, 30), (180, 255, 255)],  # Pink desserts, flowers
     }
@@ -214,62 +214,67 @@ def classify_food_by_features(image, color_analysis):
     
     # Priority-based classification (most specific to least specific)
     
-    # 1. Orange detection (very specific color)
-    if color_analysis['orange'] > 15 and color_analysis['red'] < 5:
-        logger.info("Classified as ORANGE based on orange color dominance")
+    # 1. Banana detection (yellow, low edge density, high brightness) - PRIORITY OVER ORANGE
+    if color_analysis['yellow'] > 25 and edge_density < 0.05 and brightness > 120 and color_analysis['orange'] < 10:
+        logger.info("Classified as BANANA based on yellow color, smooth texture, and low orange")
+        return 'banana'
+    
+    # 2. Orange detection (very specific color, no yellow overlap)
+    if color_analysis['orange'] > 15 and color_analysis['red'] < 5 and color_analysis['yellow'] < 10:
+        logger.info("Classified as ORANGE based on orange color dominance and no yellow")
         return 'orange'
     
-    # 2. Apple detection (red with some green)
+    # 3. Apple detection (red with some green)
     if color_analysis['red'] > 20 and color_analysis['green'] > 5 and color_analysis['green'] < 20:
         logger.info("Classified as APPLE based on red-green combination")
         return 'apple'
     
-    # 3. Banana detection (yellow, low edge density, high brightness)
-    if color_analysis['yellow'] > 30 and edge_density < 0.05 and brightness > 120:
-        logger.info("Classified as BANANA based on yellow color and smooth texture")
-        return 'banana'
-    
-    # 4. DESSERT DETECTION (white/cream dominant, high brightness, low texture)
-    if color_analysis['white'] > 25 and brightness > 140 and edge_density < 0.08:
+    # 4. DESSERT DETECTION (white/cream dominant, high brightness, low texture) - MORE SENSITIVE
+    if color_analysis['white'] > 20 and brightness > 130 and edge_density < 0.1:
         logger.info("Classified as DESSERT based on white color, high brightness, and smooth texture")
         return 'dessert'
     
-    # 5. SWEET DETECTION (white/cream with pink accents)
-    if color_analysis['white'] > 15 and color_analysis['pink'] > 5 and brightness > 130:
+    # 5. SWEET DETECTION (white/cream with pink accents) - MORE SENSITIVE
+    if color_analysis['white'] > 12 and color_analysis['pink'] > 3 and brightness > 120:
         logger.info("Classified as SWEET based on white-pink combination")
         return 'sweet'
     
-    # 6. Pizza detection (red + yellow combination, circular shape)
+    # 6. DESSERT DETECTION (high brightness, low texture, minimal colors) - FALLBACK
+    if brightness > 150 and edge_density < 0.08 and (color_analysis['red'] < 5 and color_analysis['green'] < 5 and color_analysis['yellow'] < 5):
+        logger.info("Classified as DESSERT based on high brightness, low texture, and minimal colors")
+        return 'dessert'
+    
+    # 7. Pizza detection (red + yellow combination, circular shape)
     if color_analysis['red'] > 10 and color_analysis['yellow'] > 8:
         logger.info("Classified as PIZZA based on red-yellow combination")
         return 'pizza'
     
-    # 7. Salad detection (green dominant)
+    # 8. Salad detection (green dominant)
     if color_analysis['green'] > 25:
         logger.info("Classified as SALAD based on green color dominance")
         return 'salad'
     
-    # 8. Pasta detection (yellow/beige, moderate texture) - PRIORITY OVER HOT DOG
+    # 9. Pasta detection (yellow/beige, moderate texture) - PRIORITY OVER HOT DOG
     if color_analysis['yellow'] > 20 and color_analysis['yellow'] < 50:
         logger.info("Classified as PASTA based on yellow color range")
         return 'pasta'
     
-    # 9. Cake detection (high brightness, low edge density)
+    # 10. Cake detection (high brightness, low edge density)
     if brightness > 150 and edge_density < 0.03:
         logger.info("Classified as CAKE based on high brightness and smooth texture")
         return 'cake'
     
-    # 10. Burger detection (multiple colors, high texture)
+    # 11. Burger detection (multiple colors, high texture)
     if edge_density > 0.15 and (color_analysis['red'] > 5 or color_analysis['yellow'] > 5):
         logger.info("Classified as BURGER based on high texture and mixed colors")
         return 'burger'
     
-    # 11. Sandwich detection (moderate colors, moderate texture)
+    # 12. Sandwich detection (moderate colors, moderate texture)
     if edge_density > 0.08 and edge_density < 0.15 and brightness > 100:
         logger.info("Classified as SANDWICH based on moderate texture and brightness")
         return 'sandwich'
     
-    # 12. Hot dog detection (yellow dominant, low texture)
+    # 13. Hot dog detection (yellow dominant, low texture)
     if color_analysis['yellow'] > 15 and edge_density < 0.08:
         logger.info("Classified as HOT DOG based on yellow color and low texture")
         return 'hot dog'
@@ -279,7 +284,7 @@ def classify_food_by_features(image, color_analysis):
     logger.info(f"No specific match found, using dominant color: {dominant_color}")
     
     # More intelligent fallback based on dominant color and features
-    if dominant_color[0] == 'white' and dominant_color[1] > 15:
+    if dominant_color[0] == 'white' and dominant_color[1] > 12:
         logger.info("Fallback: Classified as DESSERT based on white dominance")
         return 'dessert'
     elif dominant_color[0] == 'red' and dominant_color[1] > 10:
@@ -294,12 +299,12 @@ def classify_food_by_features(image, color_analysis):
     elif dominant_color[0] == 'orange' and dominant_color[1] > 10:
         logger.info("Fallback: Classified as ORANGE based on orange dominance")
         return 'orange'
-    elif dominant_color[0] == 'pink' and dominant_color[1] > 5:
+    elif dominant_color[0] == 'pink' and dominant_color[1] > 3:
         logger.info("Fallback: Classified as SWEET based on pink dominance")
         return 'sweet'
     else:
         # Ultimate fallback - choose based on brightness and texture
-        if brightness > 140 and edge_density < 0.1:
+        if brightness > 130 and edge_density < 0.1:
             logger.info("Ultimate fallback: Classified as DESSERT based on high brightness and low texture")
             return 'dessert'
         elif brightness > 100 and edge_density > 0.1:
@@ -374,7 +379,7 @@ def analyze_image_with_ai(image_path):
             "foods": detected_foods,
             "total_foods": len(detected_foods),
             "processing_time": round(processing_time, 2),
-            "ai_model": "YOLOv8 + Enhanced CV Pipeline v2.0",
+            "ai_model": "YOLOv8 + Enhanced CV Pipeline v3.0",
             "yolo_available": YOLO_AVAILABLE,
             "image_dimensions": image.shape[:2]
         }
@@ -411,9 +416,9 @@ def calculate_confidence(predicted_food, color_analysis, image):
         confidence_boost += 0.2
     elif predicted_food == 'banana' and color_analysis['yellow'] > 25 and edge_density < 0.05:
         confidence_boost += 0.2
-    elif predicted_food == 'dessert' and color_analysis['white'] > 25 and brightness > 140:
+    elif predicted_food == 'dessert' and color_analysis['white'] > 20 and brightness > 130:
         confidence_boost += 0.2
-    elif predicted_food == 'sweet' and color_analysis['white'] > 15 and color_analysis['pink'] > 5:
+    elif predicted_food == 'sweet' and color_analysis['white'] > 12 and color_analysis['pink'] > 3:
         confidence_boost += 0.2
     
     # Boost for high feature match
@@ -432,7 +437,7 @@ def health():
     return jsonify({
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "version": "3.2.0",
+        "version": "3.3.0",
         "yolo_available": YOLO_AVAILABLE,
         "cv_features": {
             "yolo_detection": YOLO_AVAILABLE,
